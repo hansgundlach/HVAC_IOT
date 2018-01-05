@@ -14,6 +14,12 @@ float R1 = 1000;
 float logR2, R2, T;
 float c1 = 1.009249522e-03, c2 = 2.378405444e-04, c3 = 2.019202697e-07;
 
+BlynkTimer timer;
+
+void myTimerEvent(){
+  Blynk.virtualWrite(V6,millis(10000));
+
+}
 
 void setup() {
   // Debug console
@@ -21,7 +27,7 @@ void setup() {
 
   Blynk.begin(auth);
   // put your setup code here, to run once:
-
+  timer.setInterval(10000L,myTimerEvent);
 }
 
 void loop() {
@@ -39,7 +45,7 @@ void loop() {
   Serial.println(" F"); 
 
   delay(500);
-
+timer.ru();
 
   /*temp_real
   temp_set
