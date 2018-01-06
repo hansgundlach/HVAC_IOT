@@ -16,10 +16,22 @@ float c1 = 1.009249522e-03, c2 = 2.378405444e-04, c3 = 2.019202697e-07;
 
 BlynkTimer timer;
 
+//reads temperature ad sends it off to blynk
 void myTimerEvent(){
-  Blynk.virtualWrite(V6,millis(10000));
+  Blynk.virtualWrite(V6,T);
 
 }
+//reads input from slider 
+BLYNK_WRITE(V1)
+{
+  int pinValue = param.asInt(); // assigning incoming value from pin V1 to a variable
+  // You can also use:
+  // String i = param.asStr();
+  // double d = param.asDouble();
+  Serial.print("V1 Slider value is: ");
+  Serial.println(pinValue);
+}
+
 
 void setup() {
   // Debug console
@@ -27,7 +39,7 @@ void setup() {
 
   Blynk.begin(auth);
   // put your setup code here, to run once:
-  timer.setInterval(10000L,myTimerEvent);
+  timer.setInterval(1000L,myTimerEvent);
 }
 
 void loop() {
@@ -45,7 +57,7 @@ void loop() {
   Serial.println(" F"); 
 
   delay(500);
-timer.ru();
+timer.run();
 
   /*temp_real
   temp_set
