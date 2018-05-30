@@ -18,6 +18,7 @@ float logR2, R2, T;
 float c1 = 1.009249522e-03, c2 = 2.378405444e-04, c3 = 2.019202697e-07;
 int pinValueON;
 int pinValue;
+int setpoint;
 
 
 WidgetRTC rtc; // real time clock
@@ -50,21 +51,25 @@ void myTimerEvent(){
 
 BLYNK_WRITE(V5)
 {
-  int pinValue = param.asInt(); // assigning incoming value from pin V1 to a variable
+  pinValue = param.asInt();
+  setpoint = pinValue;
+  
+  // assigning incoming value from pin V1 to a variable
   // You can also use:
   // String i = param.asStr();
   // double d = param.asDouble();
-  Serial.print("V5 Slider value is: ");
-  Serial.println(pinValue);
+ Serial.print("V5 Slider value in local: ");
+ Serial.println(pinValue);
 }
 
 
 
 BLYNK_WRITE(V7)
 {
-  pinValueON = param.asInt(); // assigning incoming value from pin V1 to a variable
-  Serial.print("V7 button is on or off");
-  Serial.println(pinValueON);
+  pinValueON = param.asInt();
+  // assigning incoming value from pin V1 to a variable
+  //Serial.print("V7 button is on or off");
+  //Serial.println(pinValueON);
 }
 
  
@@ -104,15 +109,16 @@ timer.setInterval(1000L,clockDisplay);
  T = T - 273.15;
  T = (T * 9.0)/ 5.0 + 32.0;    
 // delay(500);
- Serial.println(T);
+// Serial.println(T);
 // Serial.print("yes temperature");
- Serial.println(pinValueON);
+// Serial.println(pinValueON);
 
-timer.run();
+
  
 //BLynk app integration
   Blynk.run();
-
+   timer.run();
+//Serial.println(pinValue);
 
   /*digitalWrite(RELAY1,LOW);           // Turns ON Relays 1
 
@@ -122,14 +128,17 @@ timer.run();
 
  //control system loop
  //myPID.run();
-  
-  if ( T > pinValue || ( pinValueON == 1) ){
+  Serial.println(setpoint);
+  if ( T > setpoint || ( pinValueON == 1) ){
+ //Serial.println(T);
+ //Serial.print("V5 Slider value is: ");
  
+ //Serial.println(pinValue);
   
 //this is light on config
   
     digitalWrite(RELAY1,HIGH);
-      delay(500);
+      delay(5000);
  
   }else{
      
@@ -137,7 +146,7 @@ timer.run();
    // Turns Relay Off
    digitalWrite(RELAY1,LOW); 
    // Turns ON Relays 1 
-   delay(500);  
+   delay(5000);  
    
   
   }
