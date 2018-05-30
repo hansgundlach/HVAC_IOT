@@ -144,14 +144,14 @@ if ( T < (minTemp) || ( pinValueON == 1) ){
 digitalWrite(RELAY1,HIGH);
 delay(heatDelay);
 
-}elif(T > (maxTemp)){
+}else if(T > (maxTemp)){
   //LED is off
   //Serial.print("REAY  IS OFF");
   // Turns Relay Off
   digitalWrite(RELAY1,LOW);  
   
  //if  temp is in intermediate zone and off keep it off otherwise keep it on   
-}elif(T < maxTemp && T >minTemp && (status == LOW)){
+}else if(T < maxTemp && T >minTemp && (status == LOW)){
 //LED is off
   //Serial.print("REAY  IS OFF");
   // Turns Relay Off
@@ -159,7 +159,7 @@ delay(heatDelay);
   
 }else{
   //LED is off
-  //Serial.print("REAY  IS OFF");
+  //Serial.print("REAY  IS ON");
   // Turns Relay Off
   digitalWrite(RELAY1,HIGH);  
   
