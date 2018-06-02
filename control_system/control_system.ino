@@ -7,6 +7,10 @@
 #include <WidgetRTC.h>
 //#include <AutoPID.h> //inlcude AutoPID for more accurate controls
 
+//accutalry measure temperature
+//day -night alterations
+// schedule day to day
+
 //blynk authentication token
 char auth[] = "4b0acc400cb5442fa471ab6de0db41d1";
 //char auth[] = "721137cc6fe24899816ee75ebac3611b";
@@ -15,6 +19,7 @@ BlynkTimer timer;
 //values for thermistor measurment equation
 int ThermistorPin = 0;
 int Vo;
+//R1 is resistance of reference resistor
 float R1 = 1000;
 float logR2, R2, T;
 float c1 = 1.009249522e-03, c2 = 2.378405444e-04, c3 = 2.019202697e-07;
@@ -22,17 +27,27 @@ int pinValueON;
 
 //setpoint is the goal temperature 
 int setpoint;
+//default setpoint is temperature set when there is no other setpoint
+int default_setpoint = 65;
+//day setpoint is the setpoint during the day ie 7 am to 7pm 
+int day_setpoint;
+//night setpoint is the setpoint during the night ie 7pm to 7am 
+int night_setpoint;
 //delay between sucessive heater switches
 int heatDelay = 500;
 //width of bang-bang control 
 //HVAC turn off +3 above setpoint
 //HVAC turn on  -3 below setpoint
 int width = 3;
-//
-int minTemp = (setpoint -width);
-int maxTemp = (setpoint + width);
+//minTemp is lower bang-bang boundry
+int minTemp ;
+//maxTemp is upper bang-bang boundry
+int maxTemp ;
 //status monitors wether HVAC is on or off
 String status;
+
+String currentTime ;
+String currentDate ;
 
 WidgetRTC rtc; // real time clock
 
@@ -42,8 +57,8 @@ void clockDisplay()
   // You can call hour(), minute(), ... at any time
   // Please see Time library examples for details
 
-  String currentTime = String(hour()) + ":" + minute() + ":" + second();
-  String currentDate = String(day()) + " " + month() + " " + year();
+  currentTime = String(hour()) + ":" + minute() + ":" + second();
+  currentDate = String(day()) + " " + month() + " " + year();
   //debug purpose of clock
   /*Serial.print("Current time: ");
   Serial.print(currentTime);
@@ -64,14 +79,27 @@ void myTimerEvent(){
 
 }
 
+//read day setpoint 
 BLYNK_WRITE(V5)
 {
-  setpoint = param.asInt();
+  day_setpoint = param.asInt();
   
 // assigning incoming value from pin V1 to a variable
  //Serial.print("V5 Slider value in local: ");
  //Serial.println(pinValue);
 }
+
+BLYNK_WRITE(V9)
+{
+  night_setpoint = param.asInt();
+  
+// assigning incoming value from pin V1 to a variable
+ //Serial.print("V5 Slider value in local: ");
+ //Serial.println(pinValue);
+}
+
+
+
 
 
 
@@ -110,21 +138,34 @@ pinMode(11, OUTPUT);
 
  void loop()
 {
+  
+
+//automatic temperature regualation throughout the day
+if (hour() < 12) {
+setpoint = day_setpoint; 
+}else{
+ setpoint = night_setpoint;
+}
+
+maxTemp = setpoint + width;
+minTemp = setpoint -width;
+
+  
 //initally turn on light
 digitalWrite(11, HIGH);
-//temperature measurments
+//temperature measurments R2 is resistance of thermistor
  Vo = analogRead(ThermistorPin);
  R2 = R1 * (1023.0 / (float)Vo - 1.0);
  logR2 = log(R2);
  T = (1.0 / (c1 + c2*logR2 + c3*logR2*logR2*logR2));
  T = T - 273.15;
+ //T is in degreees fahrenheit
  T = (T * 9.0)/ 5.0 + 32.0;
      
 // debug purposes for temp 
 // Serial.println(T);
 // Serial.print("yes temperature");
 // Serial.println(pinValueON);
-
 
  
 //BLynk app integration
