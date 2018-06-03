@@ -13,7 +13,6 @@
 
 //blynk authentication token
 char auth[] = "4b0acc400cb5442fa471ab6de0db41d1";
-//char auth[] = "721137cc6fe24899816ee75ebac3611b";
 BlynkTimer timer;
 
 //values for thermistor measurment equation
@@ -29,9 +28,9 @@ int pinValueON;
 int setpoint;
 //default setpoint is temperature set when there is no other setpoint
 int default_setpoint = 65;
-//day setpoint is the setpoint during the day ie 7 am to 7pm 
+//day setpoint is the setpoint during the day between day_begin and day_end
 int day_setpoint;
-//night setpoint is the setpoint during the night ie 7pm to 7am 
+//night setpoint is the setpoint during the night ie between day_end and day_begin
 int night_setpoint;
 //delay between sucessive heater switches
 int heatDelay = 500;
@@ -48,6 +47,10 @@ String status;
 
 String currentTime ;
 String currentDate ;
+
+//day begin is the hour at which day time starts in standard military time
+int day_begin = 7;
+int day_end = 19;
 
 WidgetRTC rtc; // real time clock
 
@@ -141,12 +144,15 @@ pinMode(11, OUTPUT);
   
 
 //automatic temperature regualation throughout the day
-if (hour() < 12) {
+Serial.print(hour());
+if (hour() < day_end && hour() > day_begin) {
+ Serial.print("day hours");
 setpoint = day_setpoint; 
 }else{
+  Serial.print("night hours");
  setpoint = night_setpoint;
 }
-
+//Serial.println(setpoint);
 maxTemp = setpoint + width;
 minTemp = setpoint -width;
 
@@ -163,7 +169,7 @@ digitalWrite(11, HIGH);
  T = (T * 9.0)/ 5.0 + 32.0;
      
 // debug purposes for temp 
-// Serial.println(T);
+ //Serial.println(T);
 // Serial.print("yes temperature");
 // Serial.println(pinValueON);
 
