@@ -12,7 +12,7 @@
 // schedule day to day
 
 //blynk authentication token
-char auth[] = "4b0acc400cb5442fa471ab6de0db41d1";
+char auth[] = "Add your own token here";
 BlynkTimer timer;
 
 //values for thermistor measurment equation
